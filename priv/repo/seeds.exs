@@ -17,7 +17,7 @@ IO.puts('Runnig seeds.........')
 users = List.duplicate(%{
   points: {:placeholder, :points},
   inserted_at: {:placeholder, :now},
-  updated_at: {:placeholder, :now}}, 1_000)
+  updated_at: {:placeholder, :now}}, 1_000_000)
 IO.inspect length(users), label: "The users size is"
 
 now =
@@ -25,8 +25,8 @@ now =
   |> NaiveDateTime.truncate(:second)
 placeholders = %{points: 0, now: now}
 
-Repo.insert_all(
-  User,
-  users,
-  placeholders: placeholders
-)
+list_of_user_chunks = Enum.chunk_every(users, 50000)
+
+Enum.each list_of_user_chunks, fn rows ->
+  Repo.insert_all(User, rows, placeholders: placeholders)
+end
