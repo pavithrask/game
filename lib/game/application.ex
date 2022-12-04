@@ -18,7 +18,7 @@ defmodule Game.Application do
       GameWeb.Endpoint,
       # Start a worker by calling: Game.Worker.start_link(arg)
       # {Game.Worker, arg}
-      Game.Worker
+      {Game, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

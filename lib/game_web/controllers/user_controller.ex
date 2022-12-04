@@ -7,7 +7,7 @@ defmodule GameWeb.UserController do
   action_fallback GameWeb.FallbackController
 
   def index(conn, _params) do
-    users = Score.list_users()
+    users = Game.get_winners()
     render(conn, "index.json", users: users)
   end
 

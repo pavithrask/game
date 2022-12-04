@@ -1,4 +1,6 @@
 defmodule Game.Score do
+  import Ecto.Query, only: [from: 2]
+
   @moduledoc """
   The Score context.
   """
@@ -106,5 +108,12 @@ defmodule Game.Score do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def get_two_winners(max_number) do
+    query = from u in "users",
+      where: u.points > ^max_number,
+      select: %{id: u.id, points: u.points}
+    Repo.all(User, query)
   end
 end

@@ -5,65 +5,72 @@ defmodule Game.Worker do
 
   alias Game.Repo
   alias Game.Score.User
+  alias Game.Score
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{})
-  end
   def init(state) do
     # Schedule work to be performed on start
+    state = %{max_number: :rand.uniform(100), last_query_time: nil}
     schedule_work()
+    IO.inspect state, label: "state"
     {:ok, state}
   end
+
+  def handle_call(:winners, _from, state) do
+    IO.inspect state, label: "state"
+    state = Map.put(state, :last_query_time, DateTime.utc_now())
+    IO.inspect state, label: "state"
+
+    winners = Score.get_two_winners(state[:max_number])
+    IO.inspect winners, label: "winners"
+
+    {:reply, [%User{id: 123, points: 87}], state}
+  end
+
   def handle_info(:work, state) do
     # Do the desired work here
-    # ...
+    IO.inspect DateTime.utc_now(), label: "WORKER START"
+
+    # last_query_time = nil
+    # state = %{max_number: :rand.uniform(100), last_query_time: last_query_time}
+    state = Map.put(state, :max_number, :rand.uniform(100))
+    update_points()
+
+    IO.inspect state, label: "STATE"
+    IO.inspect DateTime.utc_now(), label: "WORKER STOP"
+
     # Reschedule once more
-    IO.inspect state, label: "Gen server is doing some work........"
-    now = DateTime.utc_now()
-    last_query_time = nil
-    state = %{max_number: :rand.uniform(100), last_query_time: last_query_time, timestamp: now}
-    update_work()
-    IO.inspect state, label: "Gen server is done working!"
     schedule_work()
     {:noreply, state}
   end
+
   defp schedule_work do
     # In 1 minute
-    Process.send_after(self(), :work, 10 * 1000)
+    Process.send_after(self(), :work, 30 * 1000)
+
+
+    # now = DateTime.utc_now()
+    # IO.inspect now, label: "NOW"
+    # # Every hour
+    # next =
+    #   now
+    #   |> DateTime.add(-now.minute, :second)
+    #   IO.inspect(label: "after -now.minute")
+    #   |> DateTime.add(-now.second, :second)
+    #   IO.inspect(label: "after -now.second")
+    #   |> DateTime.add(-elem(now.microsecond, 0), :microsecond)
+    #   IO.inspect(label: "after -now.microsecond")
+    #   |> DateTime.add(10, :second)
+    #   IO.inspect(label: "after second")
+    # milliseconds_till_next = DateTime.diff(next, now, :millisecond)
+
+    # IO.inspect next, label: "next"
+    # IO.inspect milliseconds_till_next, label: "milliseconds_till_next"
+    # Process.send_after(self(), :work, milliseconds_till_next)
   end
 
-  def update_work do
-    user = %{points: {:placeholder, :points}, updated_at: {:placeholder, :now}}
-
-    user_ids = Enum.to_list 1..100
-
-    now =
-      NaiveDateTime.utc_now()
-      |> NaiveDateTime.truncate(:second)
-
-    users =
-      Enum.map(user_ids, &%{
-        id: &1,
-        points: {:placeholder, :points},
-        updated_at: {:placeholder, :now}
-      })
-
-    placeholders = %{
-      points: :rand.uniform(100),
-      now: now
-    }
-
-    # Repo.all(from u in User, update: User, set: [points: fragment("floor(random()*100)")]
-    # |> Repo.update_all([]))
-
+  def update_points do
     update(User, set: [points: fragment("floor(random()*100)")])
     |> Repo.update_all([])
-
-    # Repo.update_all(
-    #   User,
-    #   users,
-    #   placeholders: placeholders
-    # )
   end
 
 end

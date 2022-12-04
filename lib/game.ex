@@ -1,9 +1,19 @@
 defmodule Game do
-  @moduledoc """
-  Game keeps the contexts that define your domain
-  and business logic.
+  def start_link(args) do
+    GenServer.start_link(Game.Worker, args, name: :worker)
+  end
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  def get_winners() do
+    GenServer.call(:worker, :winners)
+  end
+
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 500
+    }
+  end
 end
