@@ -7,8 +7,8 @@ defmodule GameWeb.UserController do
   action_fallback GameWeb.FallbackController
 
   def index(conn, _params) do
-    users = Game.get_winners()
-    render(conn, "index.json", users: users)
+    winners = Game.get_winners()
+    render(conn, "index.json", winners)
   end
 
   def create(conn, %{"user" => user_params}) do

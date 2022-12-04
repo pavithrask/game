@@ -17,13 +17,14 @@ defmodule Game.Worker do
 
   def handle_call(:winners, _from, state) do
     IO.inspect state, label: "state"
+    last_query_time = state[:last_query_time]
     state = Map.put(state, :last_query_time, DateTime.utc_now())
     IO.inspect state, label: "state"
 
     winners = Score.get_two_winners(state[:max_number])
     IO.inspect winners, label: "winners"
 
-    {:reply, winners, state}
+    {:reply, %{winners: winners, timestamp: last_query_time}, state}
   end
 
   def handle_info(:work, state) do
