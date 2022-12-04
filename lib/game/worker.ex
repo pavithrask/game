@@ -10,6 +10,7 @@ defmodule Game.Worker do
   def init(state) do
     state = %{max_number: :rand.uniform(100), last_query_time: nil}
     update_points()
+    :timer.send_interval(20_000, :work)
     schedule_work()
     IO.inspect state, label: "state"
     {:ok, state}
@@ -42,31 +43,6 @@ defmodule Game.Worker do
 
     schedule_work()
     {:noreply, state}
-  end
-
-  defp schedule_work do
-    # In 1 minute
-    Process.send_after(self(), :work, 30 * 1000)
-
-
-    # now = DateTime.utc_now()
-    # IO.inspect now, label: "NOW"
-    # # Every hour
-    # next =
-    #   now
-    #   |> DateTime.add(-now.minute, :second)
-    #   IO.inspect(label: "after -now.minute")
-    #   |> DateTime.add(-now.second, :second)
-    #   IO.inspect(label: "after -now.second")
-    #   |> DateTime.add(-elem(now.microsecond, 0), :microsecond)
-    #   IO.inspect(label: "after -now.microsecond")
-    #   |> DateTime.add(10, :second)
-    #   IO.inspect(label: "after second")
-    # milliseconds_till_next = DateTime.diff(next, now, :millisecond)
-
-    # IO.inspect next, label: "next"
-    # IO.inspect milliseconds_till_next, label: "milliseconds_till_next"
-    # Process.send_after(self(), :work, milliseconds_till_next)
   end
 
   def update_state(state) do

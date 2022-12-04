@@ -3,7 +3,6 @@ defmodule Game.Repo.Migrations.AlterUsersTimestampDefaultValues do
 
   def change do
     alter table(:users) do
-      # modify(:inserted_at, :timestamp, default: fragment("NOW()"))
       modify(:inserted_at, :timestamp, default: fragment("NOW()"))
       modify(:updated_at, :timestamp, default: fragment("NOW()"))
     end
