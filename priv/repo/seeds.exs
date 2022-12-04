@@ -14,19 +14,22 @@ alias Game.Repo
 alias Game.Score.User
 
 IO.puts('Runnig seeds.........')
-users = List.duplicate(%{
-  points: {:placeholder, :points},
-  inserted_at: {:placeholder, :now},
-  updated_at: {:placeholder, :now}}, 1_000_000)
+users = List.duplicate(%{}, 1_000_000)
 IO.inspect length(users), label: "The users size is"
+list_of_user_chunks = Enum.chunk_every(users, 200000)
+time1 = NaiveDateTime.utc_now
 
-now =
-  NaiveDateTime.utc_now()
-  |> NaiveDateTime.truncate(:second)
-placeholders = %{points: 0, now: now}
+parent = self()
+Repo.transaction(fn ->
+  users
+    |> Stream.chunk_every(10_000)
+    |> Task.async_stream(fn batch ->
+      {n, _} = Repo.insert_all(User, batch, caller: parent)
+      n
+    end, ordered: false, max_concurrency: 10)
+    |> Enum.reduce(0, fn {:ok, n}, acc -> acc + n end)
+  end)
 
-list_of_user_chunks = Enum.chunk_every(users, 50000)
-
-Enum.each list_of_user_chunks, fn rows ->
-  Repo.insert_all(User, rows, placeholders: placeholders)
-end
+time2 = NaiveDateTime.utc_now
+time_total = NaiveDateTime.diff(time2, time1, :microsecond)
+IO.inspect time_total, label: "time"
