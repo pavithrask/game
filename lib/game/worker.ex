@@ -40,7 +40,6 @@ defmodule Game.Worker do
     IO.inspect DateTime.utc_now(), label: "work done"
     IO.inspect state, label: "new_state"
 
-    schedule_work()
     {:noreply, state}
   end
 
