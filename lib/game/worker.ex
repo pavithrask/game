@@ -11,7 +11,6 @@ defmodule Game.Worker do
     state = %{max_number: :rand.uniform(100), last_query_time: nil}
     update_points()
     :timer.send_interval(20_000, :work)
-    schedule_work()
     IO.inspect state, label: "state"
     {:ok, state}
   end
