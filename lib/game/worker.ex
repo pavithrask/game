@@ -23,7 +23,7 @@ defmodule Game.Worker do
     winners = Score.get_two_winners(state[:max_number])
     IO.inspect winners, label: "winners"
 
-    {:reply, [%User{id: 123, points: 87}], state}
+    {:reply, winners, state}
   end
 
   def handle_info(:work, state) do

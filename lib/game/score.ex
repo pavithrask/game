@@ -1,5 +1,5 @@
 defmodule Game.Score do
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query
 
   @moduledoc """
   The Score context.
@@ -111,9 +111,9 @@ defmodule Game.Score do
   end
 
   def get_two_winners(max_number) do
-    query = from u in "users",
-      where: u.points > ^max_number,
-      select: %{id: u.id, points: u.points}
-    Repo.all(User, query)
+    User
+    |> where([u], u.points > ^max_number)
+    |> limit(2)
+    |> Repo.all()
   end
 end
