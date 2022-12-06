@@ -73,8 +73,8 @@ defmodule Game.Worker do
           from(u in User, where: u.id > ^start_id and u.id <= ^end_id,
           update: [set: [points: fragment("floor(random()*100)"), updated_at: fragment("NOW()")]])
         |> Repo.update_all([]) end, ordered: false, max_concurrency: 5)
-      |> Enum.reduce(0, fn {_, _}, _ -> IO.inspect(label: "fasdf") end)
-    end)
+      |> Enum.reduce(0, fn {n, m}, _ -> IO.inspect(m, label: "UpdateResponse") end)
+      end)
 
 
     time2 = NaiveDateTime.utc_now
