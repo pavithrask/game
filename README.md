@@ -1,5 +1,10 @@
 # Game
 
+This is a simple elixir/phoenix app which will select random two winners every minute, who have points greater than a randomly generated number which is between 0 - 100
+<br />
+<br />
+
+## How to run the application
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
@@ -12,9 +17,15 @@ To start your Phoenix server:
       * `timestamp` of the last request made to the genserver
     * Genserver also updates the `points` of each user with a random number between 0 - 100 every minute 
 
+<br />
+
 Now when visit [`localhost:4000`](http://localhost:4000) from your browser, it will show a response json with maximum two users who have points more than the `min_number`
 
+<br />
+
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+
+<br />
 
 ## Learn more
 
